@@ -107,7 +107,7 @@ bool DenoiserOptix::initOptiX(const OptixDenoiserOptions& options, OptixPixelFor
       break;
     case OPTIX_PIXEL_FORMAT_FLOAT4:
       m_sizeofPixel = static_cast<uint32_t>(4 * sizeof(float));
-#if OPTIX_VERSION == 80000
+#if OPTIX_VERSION >= 80000
       m_denoiserAlpha = OPTIX_DENOISER_ALPHA_MODE_DENOISE;
 #else
       m_denoiserAlpha = OPTIX_DENOISER_ALPHA_MODE_ALPHA_AS_AOV;
@@ -119,7 +119,7 @@ bool DenoiserOptix::initOptiX(const OptixDenoiserOptions& options, OptixPixelFor
       break;
     case OPTIX_PIXEL_FORMAT_UCHAR4:
       m_sizeofPixel = static_cast<uint32_t>(4 * sizeof(uint8_t));
-#if OPTIX_VERSION == 80000
+#if OPTIX_VERSION >= 80000
       m_denoiserAlpha = OPTIX_DENOISER_ALPHA_MODE_DENOISE;
 #else
       m_denoiserAlpha = OPTIX_DENOISER_ALPHA_MODE_ALPHA_AS_AOV;
@@ -131,7 +131,7 @@ bool DenoiserOptix::initOptiX(const OptixDenoiserOptions& options, OptixPixelFor
       break;
     case OPTIX_PIXEL_FORMAT_HALF4:
       m_sizeofPixel = static_cast<uint32_t>(4 * sizeof(uint16_t));
-#if OPTIX_VERSION == 80000
+#if OPTIX_VERSION >= 80000
       m_denoiserAlpha = OPTIX_DENOISER_ALPHA_MODE_DENOISE;
 #else
       m_denoiserAlpha = OPTIX_DENOISER_ALPHA_MODE_ALPHA_AS_AOV;
@@ -480,7 +480,7 @@ void DenoiserOptix::createSemaphore()
 #endif
 
   VkSemaphoreTypeCreateInfo timeline_create_info{.sType         = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO,
-                                                 .semaphoreType = VK_SEMAPHORE_TYPE_TIMELINE,
+                                                 .semaphoreType = VK_SEMAPHORE_TYPE_BINARY,
                                                  .initialValue  = 0};
 
   VkExportSemaphoreCreateInfo esci{.sType       = VK_STRUCTURE_TYPE_EXPORT_SEMAPHORE_CREATE_INFO_KHR,
@@ -508,10 +508,10 @@ void DenoiserOptix::createSemaphore()
   std::memset(&external_semaphore_handle_desc, 0, sizeof(external_semaphore_handle_desc));
   external_semaphore_handle_desc.flags = 0;
 #ifdef WIN32
-  external_semaphore_handle_desc.type                = cudaExternalSemaphoreHandleTypeTimelineSemaphoreWin32;
+  external_semaphore_handle_desc.type                = cudaExternalSemaphoreHandleTypeOpaqueWin32;
   external_semaphore_handle_desc.handle.win32.handle = static_cast<void*>(m_semaphore.handle);
 #else
-  external_semaphore_handle_desc.type      = cudaExternalSemaphoreHandleTypeTimelineSemaphoreFd;
+  external_semaphore_handle_desc.type      = cudaExternalSemaphoreHandleTypeOpaqueFd;
   external_semaphore_handle_desc.handle.fd = m_semaphore.handle;
 #endif
 
