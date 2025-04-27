@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2022-2025, NVIDIA CORPORATION.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -386,8 +386,6 @@ public:
     vkResetCommandPool(m_device, commandFrame.cmdPool, 0);
     VkCommandBufferBeginInfo begin_info{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO, 0, VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT};
     vkBeginCommandBuffer(cmd, &begin_info);
-
-    auto scope_dbg = m_dutil->DBG_SCOPE(cmd);
 
     // Get camera info
     float     view_aspect_ratio = m_viewSize.x / m_viewSize.y;
